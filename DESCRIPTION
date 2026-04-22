@@ -1,0 +1,41 @@
+Package: FredaApp
+Title: A Shiny App for FREDA
+Version: 0.3
+Authors@R: 
+    person("Bastian", "Reiter", , "b.reiter@med.uni-frankfurt.de", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-1088-0502"))
+Description: Shiny app to facilitate working with dsFredaClient
+URL: https://ccphos.netlify.app/, https://github.com/BastianReiter/FredaApp
+License: CC BY 4.0
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Imports:
+    assertthat,
+    callr,
+    DataEditR,
+    dplyr,
+    dsCCPhosClient,
+    dsFredaClient,
+    DSI,
+    DT,
+    gt (>= 0.10.1),
+    httpuv,
+    magrittr,
+    pingr,
+    plotly,
+    purrr,
+    shiny,
+    shiny.router,
+    shiny.semantic (>= 0.5.0),
+    shinyjs,
+    stringr,
+    sysfonts,
+    tidyr,
+    waiter (>= 0.2.5)
+Depends:
+    R (>= 2.10)
+LazyData: true
+Remotes: 
+    github::BastianReiter/dsCCPhosClient,
+    github::BastianReiter/dsFredaClient
