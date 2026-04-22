@@ -1,0 +1,96 @@
+
+
+/* ~~~ CCPhos CSS ~~~ */
+
+/*rgb(5,73,150)*/
+
+
+body { background: linear-gradient(to bottom, #ededed 20%, white 50%, white 60%, #ededed 80%);
+       font-size: 100%; }
+
+
+.item.MainMenuSelected { background-color: rgba(5, 73, 150, 0.5);
+                         box-shadow: inset 0 0 6px 4px white;
+                         color: black; }
+
+
+.ui.accordion .AccordionHeader { padding: 0.5em 1em !important;
+                                 background: linear-gradient(0deg, rgba(255,255,255,0) 0%, rgba(5,73,150,0.3) 90%, rgba(255,255,255,0) 100%); }
+
+
+
+div.ui.segment.StepInaccessible { background: none;
+                                  color: grey;
+                                  cursor: default; }
+
+div.ui.segment.StepAccessible { background-color: white;
+                                color: black;
+                                cursor: pointer; }
+
+div.ui.segment.StepHover {  border-color: black;
+                            box-shadow: inset 0 0 6px 6px rgba(5, 73, 150, 0.5);
+                            cursor: pointer;}
+
+div.ui.segment.StepSelected { background-color: white;
+                              box-shadow: inset 0 0 4px 2px rgb(5,73,150); }
+
+div.ui.segment.StepCompleted {  background-color: white;
+                                cursor: pointer;}
+
+
+
+tr.TableRowColor_LightBlue { background-color: rgba(5, 73, 150, 0.3);
+                             color: rgba(5, 73, 150, 1); }
+
+tr.TableRowColor_Green { background-color: rgba(20, 235, 31, 0.6);
+                         color: rgba(20, 135, 31, 1); }
+
+tr.TableRowColor_LightGreen { background-color: rgba(20, 235, 31, 0.3);
+                              color: rgba(20, 135, 31, 1); }
+
+tr.TableRowColor_Red { background-color: rgba(142, 30, 57, 0.4);
+                       color: rgba(142, 30, 57, 1); }
+
+tr.TableRowColor_Grey { background-color: rgba(0, 0, 0, 0.05);
+                        color: rgba(0, 0, 0, 0.4); }
+
+
+
+td.CellCSSClass_Info { background-color: rgba(5, 73, 150, 0.3);
+                       color: rgba(5, 73, 150, 1); }
+
+td.CellCSSClass_Success { background-color: rgba(20, 235, 31, 0.3);
+                          color: rgba(20, 135, 31, 1); }
+
+td.CellCSSClass_Failure { background-color: rgba(142, 30, 57, 0.4);
+                          color: rgba(142, 30, 57, 1); }
+
+td.CellCSSClass_Grey { background-color: rgba(0, 0, 0, 0.05);
+                       color: rgba(0, 0, 0, 0.4); }
+
+
+
+tr.TableRowSelected { background-color: yellow; }
+
+
+
+
+th.rotate {
+  /* Something you can count on */
+  height: 140px;
+  white-space: nowrap;
+}
+
+th.rotate > div {
+  transform:
+    /* Magic Numbers */
+    translate(25px, 51px)
+    /* 45 is really 360 - 45 */
+    rotate(315deg);
+  width: 30px;
+}
+
+th.rotate > div > span {
+  border-bottom: 1px solid #ccc;
+  padding: 5px 10px;
+}
