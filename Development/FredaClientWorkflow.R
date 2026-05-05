@@ -9,6 +9,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 library(dsBaseClient)
+library(dsFredaClient)
 library(dsCCPhosClient)
 library(dsTidyverseClient)
 # library(resourcer)
@@ -27,7 +28,7 @@ TestData <- readRDS("../dsCCPhos/Development/Data/TestData/CCPTestData.rds")
 
 CCPConnections <- ConnectToVirtualCCP(CCPTestData = TestData,
                                       NumberOfServers = 3,
-                                      NumberOfPatientsPerServer = 2000,
+                                      NumberOfPatientsPerServer = 1000,
                                       AddedDsPackages = "dsTidyverse")
                                       #Resources = list(TestResource = TestResource))
 
@@ -46,7 +47,7 @@ CCPConnections <- ConnectToVirtualCCP(CCPTestData = TestData,
 # Load Raw Data Set (RDS) from Opal data base to R sessions on servers
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-LoadRawDataSet(ServerSpecifications = NULL)
+CCP.LoadRawDataSet(ServerSpecifications = NULL)
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -62,9 +63,9 @@ RDSTableCheck <- dsFredaClient::ds.GetDataSetCheck(DataSetName = "CCP.RawDataSet
 # Optionally: Draw random sample from Raw Data Set on servers
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-ds.DrawSample(RawDataSetName = "RawDataSet",
-              SampleSize = "1000",
-              SampleName = "RDSSample")
+# ds.CCP.DrawSample(RawDataSetName = "CCP.RawDataSet",
+#                   SampleSize = 1000,
+#                   SampleName = "RDSSample")
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -73,7 +74,7 @@ ds.DrawSample(RawDataSetName = "RawDataSet",
 
 # Transform Raw Data Set (RDS) into Curated Data Set (CDS) (using default settings)
 ds.CurateData(RawDataSetName = "CCP.RawDataSet",
-              Settings = NULL,
+              Module = "CCP",
               OutputName = "CCP.CurationOutput")
 
 CDSTableCheck <- ds.GetDataSetCheck(DataSetName = "CCP.CuratedDataSet",
@@ -81,8 +82,7 @@ CDSTableCheck <- ds.GetDataSetCheck(DataSetName = "CCP.CuratedDataSet",
                                     Stage = "Curated")
 
 # Get curation reports
-CurationReport <- ds.GetCurationReport()
-
+CurationReport <- ds.GetCurationReport(Module = "CCP")
 
 
 
@@ -91,7 +91,7 @@ CurationReport <- ds.GetCurationReport()
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Run ds.AugmentData
-ds.AugmentData(CuratedDataSetName = "CCP.CuratedDataSet")
+ds.CCP.AugmentData(CuratedDataSetName = "CCP.CuratedDataSet")
 
 
 ADSTableCheck <- ds.CheckDataSet(DataSetName = "AugmentedDataSet")

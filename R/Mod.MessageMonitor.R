@@ -9,7 +9,7 @@
 
 #' @noRd
 #-------------------------------------------------------------------------------
-ModMessageMonitor_UI <- function(id)
+Mod.MessageMonitor.UI <- function(id)
 #-------------------------------------------------------------------------------
 {
   ns <- NS(id)
@@ -33,7 +33,7 @@ ModMessageMonitor_UI <- function(id)
 
 #' @noRd
 #-------------------------------------------------------------------------------
-ModMessageMonitor_Server <- function(id,
+Mod.MessageMonitor.Server <- function(id,
                                      MessagesList)
 #-------------------------------------------------------------------------------
 {

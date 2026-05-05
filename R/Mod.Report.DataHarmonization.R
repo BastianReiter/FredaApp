@@ -1,6 +1,6 @@
 
 
-# --- MODULE: DataTransformationMonitor ---
+# --- MODULE: Report.DataHarmonization ---
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Module UI component
@@ -8,7 +8,7 @@
 
 #' @noRd
 #-------------------------------------------------------------------------------
-ModDataTransformationMonitor_UI <- function(id)
+Mod.Report.DataHarmonization.UI <- function(id)
 #-------------------------------------------------------------------------------
 {
   ns <- NS(id)
@@ -72,7 +72,7 @@ ModDataTransformationMonitor_UI <- function(id)
 
 #' @noRd
 #-------------------------------------------------------------------------------
-ModDataTransformationMonitor_Server <- function(id)
+Mod.Report.DataHarmonization.Server <- function(id)
 #-------------------------------------------------------------------------------
 {
   moduleServer(id,
@@ -106,13 +106,13 @@ ModDataTransformationMonitor_Server <- function(id)
                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                   observe({ updateSelectInput(session = getDefaultReactiveDomain(),
                                               inputId = "ServerName",
-                                              choices = names(session$userData$CurationReport()$Transformation),
-                                              selected = names(session$userData$CurationReport()$Transformation)[1])
+                                              choices = names(session$userData$CurationReport() %>% pluck("DataHarmonization", "Monitors", "TableLevel")),
+                                              selected = names(session$userData$CurationReport()%>% pluck("DataHarmonization", "Monitors", "TableLevel"))[1])
 
                             updateSelectInput(session = getDefaultReactiveDomain(),
                                               inputId = "MonitorTableName",
-                                              choices = names(session$userData$CurationReport()$Transformation[[1]]$Monitors),
-                                              selected = names(session$userData$CurationReport()$Transformation[[1]]$Monitors)[1])
+                                              choices = names(session$userData$CurationReport() %>% pluck("DataHarmonization", "Monitors", "FeatureLevel", 1)),
+                                              selected = names(session$userData$CurationReport()%>% pluck("DataHarmonization", "Monitors", "FeatureLevel", 1))[1])
                           }) %>%
                       bindEvent(session$userData$CurationReport())
 
@@ -123,7 +123,7 @@ ModDataTransformationMonitor_Server <- function(id)
 
                   # Reactive expression: Data for eligibility overview
                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                  Data_EligibilityOverview <- reactive({ req(session$userData$CurationReport())
+                  Data.EligibilityOverview <- reactive({ req(session$userData$CurationReport())
                                                          req(input$ServerName)
                                                          req(input$MonitorTableName)
 
@@ -135,14 +135,16 @@ ModDataTransformationMonitor_Server <- function(id)
                                                              #   - 'Feature': contains names of features
                                                              #   - 'data': plot data for feature-specific plot
                                                              #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                                             session$userData$CurationReport()$Transformation[[input$ServerName]]$EligibilityOverviews[[input$MonitorTableName]] %>%
-                                                                 select(-ends_with(".Proportional")) %>%
-                                                                 pivot_longer(cols = c(Raw, Harmonized, Recoded, Final),
-                                                                              names_to = "Stage",
-                                                                              values_to = "Count") %>%
-                                                                 pivot_wider(names_from = "Eligibility",
-                                                                             values_from = "Count") %>%
-                                                                 nest(.by = Feature)      # 'Split' the whole table into smaller data frames for each 'Feature' value
+                                                             session$userData$CurationReport() %>%
+                                                                  pluck("DataHarmonization", "Monitors", "FeatureLevel", input$ServerName, input$MonitorTableName) %>%
+                                                                  list_rbind(names_to = "Feature") %>%
+                                                                  select(-starts_with("Proportion")) %>%
+                                                                  pivot_longer(cols = c(Count.Raw, Count.Remediated, Count.Recoded, Count.Final),
+                                                                               names_to = "Stage",
+                                                                               values_to = "Count") %>%
+                                                                  pivot_wider(names_from = "Eligibility",
+                                                                              values_from = "Count") %>%
+                                                                  nest(.by = Feature)      # 'Split' the whole table into smaller data frames for each 'Feature' value
                                                          }
                                                        })
 
@@ -152,19 +154,19 @@ ModDataTransformationMonitor_Server <- function(id)
                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
                   # Dynamically create empty UI elements to be filled further down
-                  output$EligibilityOverview <- renderUI({ req(Data_EligibilityOverview())
+                  output$EligibilityOverview <- renderUI({ req(Data.EligibilityOverview())
 
                                                            # Assign loading behavior
                                                            LoadingOn()
                                                            on.exit(LoadingOff())
 
                                                            # Create list of divs with (empty) plotlyOutput objects with an assigned Output ID for plots
-                                                           PlotOutputList <- Data_EligibilityOverview()$Feature %>%
+                                                           PlotOutputList <- Data.EligibilityOverview()$Feature %>%
                                                                                   imap(function(feature, index)
                                                                                        {
                                                                                           div(div(class = "ui small grey ribbon label",
                                                                                                   feature),   # Plot label
-                                                                                              plotly::plotlyOutput(outputId = ns(paste0("PlotEligibility_", index)),
+                                                                                              plotly::plotlyOutput(outputId = ns(paste0("PlotEligibility.", index)),
                                                                                                                    height = "120px"))
                                                                                        })
 
@@ -173,32 +175,32 @@ ModDataTransformationMonitor_Server <- function(id)
                                                          })
 
                   # List of plotly-objects to be assigned to output
-                  PlotList_EligibilityOverview <- reactive({ req(Data_EligibilityOverview())
+                  PlotList.EligibilityOverview <- reactive({ req(Data.EligibilityOverview())
 
-                                                             Data_EligibilityOverview()$Feature %>%
+                                                             Data.EligibilityOverview()$Feature %>%
                                                                   map(function(feature)
                                                                       {
-                                                                          PlotData <- as.data.frame(filter(Data_EligibilityOverview(), Feature == feature)$data[[1]])
+                                                                          PlotData <- as.data.frame(filter(Data.EligibilityOverview(), Feature == feature)$data[[1]])
 
                                                                           plotly::plot_ly(data = PlotData,      # Must be a data.frame, not a tibble!
                                                                                           x = ~Stage,
                                                                                           y = ~Eligible,
                                                                                           type = "bar",
                                                                                           name = "Eligible",
-                                                                                          color = I(dsCCPhosClient::CCPhosColors$Green),
+                                                                                          color = I(dsFredaClient::FredaColors$Green),
                                                                                           showlegend = FALSE) %>%
                                                                                       plotly::add_trace(y = ~Ineligible,
                                                                                                         name = "Ineligible",
-                                                                                                        color = I(dsCCPhosClient::CCPhosColors$Red)) %>%
+                                                                                                        color = I(dsFredaClient::FredaColors$Red)) %>%
                                                                                       plotly::add_trace(y = ~Missing,
                                                                                                         name = "Missing",
-                                                                                                        color = I(dsCCPhosClient::CCPhosColors$MediumGrey)) %>%
+                                                                                                        color = I(dsFredaClient::FredaColors$MediumGrey)) %>%
                                                                                       plotly::layout(font = list(size = 11,
-                                                                                                                 color = I(dsCCPhosClient::CCPhosColors$DarkGrey)),
+                                                                                                                 color = I(dsFredaClient::FredaColors$DarkGrey)),
                                                                                                      xaxis = list(#side = "top",
                                                                                                                   title = "",
                                                                                                                   categoryorder = "array",
-                                                                                                                  categoryarray = c("Raw", "Harmonized", "Recoded", "Final")),
+                                                                                                                  categoryarray = c("Count.Raw", "Count.Remediated", "Count.Recoded", "Count.Final")),
                                                                                                      yaxis = list(title = "",
                                                                                                                   showticklabels = FALSE),
                                                                                                      barmode = "stack") %>%
@@ -207,48 +209,49 @@ ModDataTransformationMonitor_Server <- function(id)
                                                            })
 
                   # For now, each output element must be assigned explicitly
-                  output[["PlotEligibility_1"]] <- plotly::renderPlotly({ req(PlotList_EligibilityOverview); PlotList_EligibilityOverview()[[1]] })
-                  output[["PlotEligibility_2"]] <- plotly::renderPlotly({ req(PlotList_EligibilityOverview); PlotList_EligibilityOverview()[[2]] })
-                  output[["PlotEligibility_3"]] <- plotly::renderPlotly({ req(PlotList_EligibilityOverview); PlotList_EligibilityOverview()[[3]] })
-                  output[["PlotEligibility_4"]] <- plotly::renderPlotly({ req(PlotList_EligibilityOverview); PlotList_EligibilityOverview()[[4]] })
-                  output[["PlotEligibility_5"]] <- plotly::renderPlotly({ req(PlotList_EligibilityOverview); PlotList_EligibilityOverview()[[5]] })
-                  output[["PlotEligibility_6"]] <- plotly::renderPlotly({ req(PlotList_EligibilityOverview); PlotList_EligibilityOverview()[[6]] })
-                  output[["PlotEligibility_7"]] <- plotly::renderPlotly({ req(PlotList_EligibilityOverview); PlotList_EligibilityOverview()[[7]] })
-                  output[["PlotEligibility_8"]] <- plotly::renderPlotly({ req(PlotList_EligibilityOverview); PlotList_EligibilityOverview()[[8]] })
-                  output[["PlotEligibility_9"]] <- plotly::renderPlotly({ req(PlotList_EligibilityOverview); PlotList_EligibilityOverview()[[9]] })
-                  output[["PlotEligibility_10"]] <- plotly::renderPlotly({ req(PlotList_EligibilityOverview); PlotList_EligibilityOverview()[[10]] })
-                  output[["PlotEligibility_11"]] <- plotly::renderPlotly({ req(PlotList_EligibilityOverview); PlotList_EligibilityOverview()[[11]] })
-                  output[["PlotEligibility_12"]] <- plotly::renderPlotly({ req(PlotList_EligibilityOverview); PlotList_EligibilityOverview()[[12]] })
-                  output[["PlotEligibility_13"]] <- plotly::renderPlotly({ req(PlotList_EligibilityOverview); PlotList_EligibilityOverview()[[13]] })
-                  output[["PlotEligibility_14"]] <- plotly::renderPlotly({ req(PlotList_EligibilityOverview); PlotList_EligibilityOverview()[[14]] })
-                  output[["PlotEligibility_15"]] <- plotly::renderPlotly({ req(PlotList_EligibilityOverview); PlotList_EligibilityOverview()[[15]] })
-                  output[["PlotEligibility_16"]] <- plotly::renderPlotly({ req(PlotList_EligibilityOverview); PlotList_EligibilityOverview()[[16]] })
-                  output[["PlotEligibility_17"]] <- plotly::renderPlotly({ req(PlotList_EligibilityOverview); PlotList_EligibilityOverview()[[17]] })
-                  output[["PlotEligibility_18"]] <- plotly::renderPlotly({ req(PlotList_EligibilityOverview); PlotList_EligibilityOverview()[[18]] })
-                  output[["PlotEligibility_19"]] <- plotly::renderPlotly({ req(PlotList_EligibilityOverview); PlotList_EligibilityOverview()[[19]] })
-                  output[["PlotEligibility_20"]] <- plotly::renderPlotly({ req(PlotList_EligibilityOverview); PlotList_EligibilityOverview()[[20]] })
+                  output[["PlotEligibility.1"]] <- plotly::renderPlotly({ req(PlotList.EligibilityOverview); PlotList.EligibilityOverview()[[1]] })
+                  output[["PlotEligibility.2"]] <- plotly::renderPlotly({ req(PlotList.EligibilityOverview); PlotList.EligibilityOverview()[[2]] })
+                  output[["PlotEligibility.3"]] <- plotly::renderPlotly({ req(PlotList.EligibilityOverview); PlotList.EligibilityOverview()[[3]] })
+                  output[["PlotEligibility.4"]] <- plotly::renderPlotly({ req(PlotList.EligibilityOverview); PlotList.EligibilityOverview()[[4]] })
+                  output[["PlotEligibility.5"]] <- plotly::renderPlotly({ req(PlotList.EligibilityOverview); PlotList.EligibilityOverview()[[5]] })
+                  output[["PlotEligibility.6"]] <- plotly::renderPlotly({ req(PlotList.EligibilityOverview); PlotList.EligibilityOverview()[[6]] })
+                  output[["PlotEligibility.7"]] <- plotly::renderPlotly({ req(PlotList.EligibilityOverview); PlotList.EligibilityOverview()[[7]] })
+                  output[["PlotEligibility.8"]] <- plotly::renderPlotly({ req(PlotList.EligibilityOverview); PlotList.EligibilityOverview()[[8]] })
+                  output[["PlotEligibility.9"]] <- plotly::renderPlotly({ req(PlotList.EligibilityOverview); PlotList.EligibilityOverview()[[9]] })
+                  output[["PlotEligibility.10"]] <- plotly::renderPlotly({ req(PlotList.EligibilityOverview); PlotList.EligibilityOverview()[[10]] })
+                  output[["PlotEligibility.11"]] <- plotly::renderPlotly({ req(PlotList.EligibilityOverview); PlotList.EligibilityOverview()[[11]] })
+                  output[["PlotEligibility.12"]] <- plotly::renderPlotly({ req(PlotList.EligibilityOverview); PlotList.EligibilityOverview()[[12]] })
+                  output[["PlotEligibility.13"]] <- plotly::renderPlotly({ req(PlotList.EligibilityOverview); PlotList.EligibilityOverview()[[13]] })
+                  output[["PlotEligibility.14"]] <- plotly::renderPlotly({ req(PlotList.EligibilityOverview); PlotList.EligibilityOverview()[[14]] })
+                  output[["PlotEligibility.15"]] <- plotly::renderPlotly({ req(PlotList.EligibilityOverview); PlotList.EligibilityOverview()[[15]] })
+                  output[["PlotEligibility.16"]] <- plotly::renderPlotly({ req(PlotList.EligibilityOverview); PlotList.EligibilityOverview()[[16]] })
+                  output[["PlotEligibility.17"]] <- plotly::renderPlotly({ req(PlotList.EligibilityOverview); PlotList.EligibilityOverview()[[17]] })
+                  output[["PlotEligibility.18"]] <- plotly::renderPlotly({ req(PlotList.EligibilityOverview); PlotList.EligibilityOverview()[[18]] })
+                  output[["PlotEligibility.19"]] <- plotly::renderPlotly({ req(PlotList.EligibilityOverview); PlotList.EligibilityOverview()[[19]] })
+                  output[["PlotEligibility.20"]] <- plotly::renderPlotly({ req(PlotList.EligibilityOverview); PlotList.EligibilityOverview()[[20]] })
 
 
 
                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                   # Reactive expression: Data for transformation track table
                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                  Data_TransformationTracks <- reactive({ req(session$userData$CurationReport())
+                  Data.TransformationTracks <- reactive({ req(session$userData$CurationReport())
                                                           req(input$ServerName)
                                                           req(input$MonitorTableName)
 
                                                           if (!is.null(session$userData$CurationReport()))
                                                           {
-                                                              session$userData$CurationReport()$Transformation[[input$ServerName]]$Monitors[[input$MonitorTableName]] %>%
+                                                              session$userData$CurationReport() %>%
+                                                                  pluck("DataHarmonization", "Monitors", "ValueLevel", input$ServerName, input$MonitorTableName) %>%
                                                                   { if (input$ShowNonOccurringValues == FALSE) { filter(., IsOccurring == TRUE) } else {.} } %>%       # Filter for occurring values only, if option checked in UI
                                                                   mutate(CellCSSClass.Value.Raw = case_when(IsOccurring == FALSE & IsEligible.Raw == TRUE ~ "CellCSSClass_Info",
                                                                                                             IsOccurring == TRUE & IsEligible.Raw == TRUE ~ "CellCSSClass_Success",
                                                                                                             !is.na(Value.Raw) & IsEligible.Raw == FALSE ~ "CellCSSClass_Failure",
                                                                                                             is.na(Value.Raw) ~ "CellCSSClass_Grey",
                                                                                                             TRUE ~ "None"),
-                                                                         CellCSSClass.Value.Harmonized = case_when(IsOccurring == TRUE & IsEligible.Harmonized == TRUE ~ "CellCSSClass_Success",
-                                                                                                                   !is.na(Value.Harmonized) & IsEligible.Harmonized == FALSE ~ "CellCSSClass_Failure",
-                                                                                                                   is.na(Value.Harmonized) ~ "CellCSSClass_Grey",
+                                                                         CellCSSClass.Value.Remediated = case_when(IsOccurring == TRUE & IsEligible.Remediated == TRUE ~ "CellCSSClass_Success",
+                                                                                                                   !is.na(Value.Remediated) & IsEligible.Remediated == FALSE ~ "CellCSSClass_Failure",
+                                                                                                                   is.na(Value.Remediated) ~ "CellCSSClass_Grey",
                                                                                                                    TRUE ~ "None"),
                                                                          CellCSSClass.Value.Recoded = case_when(IsOccurring == TRUE & IsEligible.Recoded == TRUE ~ "CellCSSClass_Success",
                                                                                                                 !is.na(Value.Recoded) & IsEligible.Recoded == FALSE ~ "CellCSSClass_Failure",
@@ -263,17 +266,17 @@ ModDataTransformationMonitor_Server <- function(id)
 
                   # Render reactive output: TransformationTracks
                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                  output$TransformationTracks <- renderUI({   req(Data_TransformationTracks())
+                  output$TransformationTracks <- renderUI({   req(Data.TransformationTracks())
 
                                                               # Assign loading behavior
                                                               LoadingOn()
                                                               on.exit(LoadingOff())
 
                                                               # Modify data for rendering purposes
-                                                              TableData <- Data_TransformationTracks() %>%
+                                                              TableData <- Data.TransformationTracks() %>%
                                                                                 select(Feature,
                                                                                        Value.Raw,
-                                                                                       Value.Harmonized,
+                                                                                       Value.Remediated,
                                                                                        Value.Recoded,
                                                                                        Value.Final,
                                                                                        Count.Raw,
@@ -285,7 +288,7 @@ ModDataTransformationMonitor_Server <- function(id)
                                                                                        CategoryColumn = "Feature",
                                                                                        ColContentHorizontalAlign = "center",
                                                                                        ColumnLabels = c(Value.Raw = "Raw",
-                                                                                                        Value.Harmonized = "Harmonized",
+                                                                                                        Value.Remediated = "Remediated",
                                                                                                         Value.Recoded = "Recoded",
                                                                                                         Value.Final = "Final",
                                                                                                         Count.Raw = "Count"),

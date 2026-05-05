@@ -11,7 +11,7 @@
 #'
 #' @noRd
 #-------------------------------------------------------------------------------
-ModLogin_UI <- function(id)
+Mod.Login.UI <- function(id)
 #-------------------------------------------------------------------------------
 {
   ns <- NS(id)
@@ -113,7 +113,7 @@ ModLogin_UI <- function(id)
 #'
 #' @noRd
 #-------------------------------------------------------------------------------
-ModLogin_Server <- function(id)
+Mod.Login.Server <- function(id)
 #-------------------------------------------------------------------------------
 {
   moduleServer(id,
@@ -126,20 +126,20 @@ ModLogin_Server <- function(id)
                   # --- Server logic real CCP connection ---
 
                   # Create a reactive expression containing a data frame read from an uploaded csv-file if provided
-                  ServerSpecifications_InputData <- reactive({ FilePath <- input$FileInput$datapath
+                  ServerSpecifications.InputData <- reactive({ FilePath <- input$FileInput$datapath
                                                                if (is.null(FilePath)) { return(dsCCPhosClient::ServerSpecifications) }
                                                                else { return(read.csv(file = FilePath)) } })
 
                   # Create a reactive value containing data in the specification's table (initially fed with optional input and then optionally edited)
-                  ServerSpecifications_EditData <- DataEditR::dataEditServer(id = "ServerSpecificationsTable",
-                                                                             data = ServerSpecifications_InputData,
+                  ServerSpecifications.EditData <- DataEditR::dataEditServer(id = "ServerSpecificationsTable",
+                                                                             data = ServerSpecifications.InputData,
                                                                              col_names = c("Server name", "Server URL", "Project name", "Token"),
                                                                              col_stretch = TRUE,
                                                                              col_options = list(Token = "password"))
 
                   # Determine file-saving functionality
                   DataEditR::dataOutputServer(id = "ServerSpecificationsSave",
-                                              data = ServerSpecifications_EditData,
+                                              data = ServerSpecifications.EditData,
                                               write_fun = "write.csv",
                                               write_args = list(row.names = FALSE))   # Don't write row names in csv-file
 
@@ -148,7 +148,7 @@ ModLogin_Server <- function(id)
                             on.exit({ WaiterScreen$hide() })
 
                             # Assign Server Specifications (CCP credentials and project names) to session$userData according to input table
-                            session$userData$ServerSpecifications(ServerSpecifications_EditData())
+                            session$userData$ServerSpecifications(ServerSpecifications.EditData())
 
                             # Trigger dsCCPhosClient::ConnectToCCP() ...
                             Connections <- dsCCPhosClient::ConnectToCCP(ServerSpecifications = session$userData$ServerSpecifications())
@@ -175,7 +175,7 @@ ModLogin_Server <- function(id)
                             on.exit({ WaiterScreen$hide() })
 
                             # Trigger function that returns connections object
-                            Connections <- dsCCPhosClient::ConnectToVirtualCCP(CCPTestData = session$userData$CCPTestData,
+                            Connections <- dsCCPhosClient::ConnectToVirtualCCP(CCPTestData = session$userData$TestData,
                                                                                NumberOfServers = as.integer(input$NumberOfServers),
                                                                                NumberOfPatientsPerServer = as.integer(input$NumberOfPatientsPerServer))
 

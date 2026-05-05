@@ -8,7 +8,7 @@
 
 #' @noRd
 #-------------------------------------------------------------------------------
-ModServerOpalDBMonitor_UI <- function(id)
+Mod.ServerOpalDBMonitor.UI <- function(id)
 #-------------------------------------------------------------------------------
 {
   ns <- NS(id)
@@ -29,7 +29,7 @@ ModServerOpalDBMonitor_UI <- function(id)
 
 #' @noRd
 #-------------------------------------------------------------------------------
-ModServerOpalDBMonitor_Server <- function(id)
+Mod.ServerOpalDBMonitor.Server <- function(id)
 #-------------------------------------------------------------------------------
 {
   moduleServer(id,

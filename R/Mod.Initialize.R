@@ -9,16 +9,16 @@
 
 #' @noRd
 #-------------------------------------------------------------------------------
-ModInitialize <- function(id,
-                          ADSCheckData = NULL,
-                          CCPTestData = NULL,
-                          CDSCheckData = NULL,
-                          CurationReport = NULL,
-                          DSConnections = NULL,
-                          ExplorationData = NULL,
-                          RDSCheckData = NULL,
-                          ServerSpecifications = NULL,
-                          ServerWorkspaceInfo = NULL)
+Mod.Initialize <- function(id,
+                           ADSCheckData = NULL,
+                           TestData = NULL,
+                           CDSCheckData = NULL,
+                           CurationReport = NULL,
+                           DSConnections = NULL,
+                           ExplorationData = NULL,
+                           RDSCheckData = NULL,
+                           ServerSpecifications = NULL,
+                           ServerWorkspaceInfo = NULL)
 #-------------------------------------------------------------------------------
 {
   moduleServer(id,
@@ -26,7 +26,7 @@ ModInitialize <- function(id,
                {
                   if (!is.null(ADSCheckData)) { session$userData$ADSCheckData(ADSCheckData) }
 
-                  if (!is.null(CCPTestData)) { session$userData$CCPTestData <- CCPTestData }
+                  if (!is.null(TestData)) { session$userData$TestData <- TestData }
 
                   if (!is.null(CDSCheckData)) { session$userData$CDSCheckData(CDSCheckData) }
 

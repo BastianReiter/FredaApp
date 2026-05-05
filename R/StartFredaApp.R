@@ -1,11 +1,11 @@
 
-#' StartCCPhosApp
+#' StartFredaApp
 #'
 #' Launch Shiny app
 #'
 #' @param DSConnections \code{list} of \code{DSConnection} objects
 #' @param ServerSpecifications \code{data.frame}
-#' @param CCPTestData \code{list} - Optional CCP test data
+#' @param TestData \code{list} - Optional test data
 #' @param RDSCheckData \code{list} - Optional RDSCheck data
 #' @param CurationReport \code{list} - Optional CurationReport data
 #'
@@ -13,8 +13,8 @@
 #'
 #' @author Bastian Reiter
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-StartCCPhosApp <- function(#--- Arguments for app itself ---
-                           CCPTestData = NULL,
+StartFredaApp <- function(#--- Arguments for app itself ---
+                           TestData = NULL,
                            RDSCheckData = NULL,
                            CDSCheckData = NULL,
                            ADSCheckData = NULL,
@@ -38,11 +38,11 @@ StartCCPhosApp <- function(#--- Arguments for app itself ---
       #Worker <- shiny.worker::initialize_worker()
 
       # Since the app is deployed as a package, the folder for external resources (e.g. CSS files, static images) needs to be added manually
-      shiny::addResourcePath('www', system.file("www", package = "CCPhosApp"))
+      shiny::addResourcePath('www', system.file("www", package = "FredaGUI"))
 
-      # Start CCPhos app
+      # Start Freda app
       shiny::shinyApp(ui = MainUIComponent(),
-                      server = MainServerComponent(CCPTestData = CCPTestData,
+                      server = MainServerComponent(TestData = TestData,
                                                    RDSCheckData = RDSCheckData,
                                                    CDSCheckData = CDSCheckData,
                                                    ADSCheckData = ADSCheckData,
@@ -52,7 +52,7 @@ StartCCPhosApp <- function(#--- Arguments for app itself ---
                                                    ServerWorkspaceInfo = ServerWorkspaceInfo))
   }
 
-  # Either use CCPhosApp::RunAutonomousApp() to run the app in a separate background process or run it in the hosting session
+  # Either use FredaGUI::RunAutonomousApp() to run the app in a separate background process or run it in the hosting session
   if (RunAutonomously == TRUE)
   {
       RunAutonomousApp(ShinyAppInitFunction = InitFunction,

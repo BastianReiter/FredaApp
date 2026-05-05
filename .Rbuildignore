@@ -1,4 +1,6 @@
-^FredaApp\.Rproj$
+^\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^Development$
+^\.positai$
+^\.claude$

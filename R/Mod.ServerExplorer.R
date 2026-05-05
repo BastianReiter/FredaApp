@@ -8,7 +8,7 @@
 
 #' @noRd
 #-------------------------------------------------------------------------------
-ModServerExplorer_UI <- function(id)
+Mod.ServerExplorer.UI <- function(id)
 #-------------------------------------------------------------------------------
 {
   ns <- NS(id)
@@ -75,7 +75,7 @@ ModServerExplorer_UI <- function(id)
 
 #' @noRd
 #-------------------------------------------------------------------------------
-ModServerExplorer_Server <- function(id)
+Mod.ServerExplorer.Server <- function(id)
 #-------------------------------------------------------------------------------
 {
   moduleServer(id,

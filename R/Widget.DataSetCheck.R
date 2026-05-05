@@ -1,9 +1,8 @@
 
-#' Widget.ProcessingMonitor
+#' Widget.DataSetCheck
 #'
-#' Launch a Shiny app that facilitates interacting with output of processing monitoring, like data set checks and data transformation tracks.
+#' Launch a Shiny app that facilitates interpretation of data set check reports
 #'
-#' @param ServerSpecifications \code{data.frame} containing credentials for login
 #' @param DSConnections \code{list} of \code{DSConnection} objects
 #' @param RunAutonomously \code{logical} indicating whether the Shiny app is hosted by a background process (default) available as a URL via web browsers or - if set to \code{FALSE} - is hosted by the current running R session.
 #' @param RunInViewer \code{logical} indicating whether the Shiny app should be run in the RStudio Viewer pane (Default: \code{FALSE})
@@ -15,16 +14,16 @@
 #'
 #' @author Bastian Reiter
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Widget.ProcessingMonitor <- function(#--- Arguments for app itself ---
-                                     RDSCheckData = NULL,
-                                     #CDSCheckData = NULL,
-                                     #ADSCheckData = NULL,
-                                     DSConnections = NULL,
-                                     #--- Arguments for app wrapper ---
-                                     EndProcessWhenClosingApp = TRUE,
-                                     RunAutonomously = FALSE,
-                                     RunInViewer = FALSE,
-                                     ...)
+Widget.DataSetCheck <- function(#--- Arguments for app itself ---
+                                RDSCheckData = NULL,
+                                #CDSCheckData = NULL,
+                                #ADSCheckData = NULL,
+                                DSConnections = NULL,
+                                #--- Arguments for app wrapper ---
+                                EndProcessWhenClosingApp = TRUE,
+                                RunAutonomously = FALSE,
+                                RunInViewer = FALSE,
+                                ...)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {
   # --- For Testing Purposes ---
@@ -74,13 +73,13 @@ Widget.ProcessingMonitor <- function(#--- Arguments for app itself ---
         Layout <- function(ns)
         {
             div(h4(class = "ui dividing header",
-                "Processing Monitor"),
+                "Data Set Check"),
 
                 div(class = "ui accordion",
 
                     div(class = "active title AccordionHeader",
                         shiny.semantic::icon(class = "dropdown"),
-                        "Data Set Checks"),
+                        "Data Set Check"),
 
                     div(class = "active content",
 
@@ -88,7 +87,7 @@ Widget.ProcessingMonitor <- function(#--- Arguments for app itself ---
                                      overflow: auto;
                                      margin: 0;",
 
-                            Mod.DataSetCheck.UI("RDSMonitor")
+                            Mod.DataSetCheck.UI("RDSCheck")
 
                             # shiny.semantic::tabset(tabs = list(list(menu = "Raw Data Set (RDS)",
                             #                                         content = ModDataSetMonitor_UI("RDSMonitor")),
@@ -96,54 +95,13 @@ Widget.ProcessingMonitor <- function(#--- Arguments for app itself ---
                             #                                         content = ModDataSetMonitor_UI("CDSMonitor")),
                             #                                    list(menu = "Augmented Data Set (ADS)",
                             #                                         content = ModDataSetMonitor_UI("ADSMonitor"))))
-                            ))),
-
-
-                #---------------------------------------------------------------
-                div(class = "ui divider",
-                    style = "margin: 1.5em 0;"),
-                #---------------------------------------------------------------
-
-
-                div(class = "ui accordion",      # Note: For this to work an extra JS script is necessary (see MainUIComponent())
-
-                    div(class = "active title AccordionHeader",
-                        shiny.semantic::icon(class = "dropdown"),
-                        "Curation Report"),
-
-                    div(class = "active content",
-
-                        div(style = "height: 20em;
-                                     overflow: auto;
-                                     margin: 0;",
-
-                            ModCurationReport_UI("CurationReport")))),
-
-
-                #---------------------------------------------------------------
-                div(class = "ui divider",
-                    style = "margin: 1.5em 0;"),
-                #---------------------------------------------------------------
-
-
-                div(class = "ui accordion",
-
-                    div(class = "active title AccordionHeader",
-                        shiny.semantic::icon(class = "dropdown"),
-                        "Data Transformation Monitor"),
-
-                    div(class = "active content",
-
-                        div(style = "height: 30em;
-                                     overflow: auto;",
-
-                            ModDataTransformationMonitor_UI("DataTransformationMonitor")))))
+                            ))))
          }
 
          # Call Widget frame module UI and pass widget-specific UI layout
-         ModWidget_UI(id = "ProcessingMonitorWidget",
-                      Title = "CCPhos Processing Monitor",
-                      WidgetMainUI = Layout)
+         Mod.Widget.UI(id = "ProcessingMonitorWidget",
+                       Title = "CCPhos Processing Monitor",
+                       WidgetMainUI = Layout)
     }
 
     #---------------------------------------------------------------------------
@@ -157,47 +115,33 @@ Widget.ProcessingMonitor <- function(#--- Arguments for app itself ---
         # Define widget-specific server logic that is passed to widget frame module
         WidgetServerLogic <- function(session)
                              {
-
-
-                                # # --- Call modules: DataSet Monitors ---
-                                # ModDataSetMonitor_Server(id = "RDSMonitor", DataSetCheckData = session$userData$RDSCheckData)
-                                # ModDataSetMonitor_Server(id = "CDSMonitor", DataSetCheckData = session$userData$CDSCheckData)
-                                # ModDataSetMonitor_Server(id = "ADSMonitor", DataSetCheckData = session$userData$ADSCheckData)
-                                #
-                                # # --- Call module: Data Curation Monitor ---
-                                # ModCurationReport_Server(id = "CurationReport")
-                                #
-                                # # --- Call module: Data Transformation Monitor ---
-                                # ModDataTransformationMonitor_Server(id = "DataTransformationMonitor")
+                                # --- Call modules: Data Set Checks ---
+                                Mod.DataSetCheck.Server(id = "RDSCheck", DataSetCheckData = session$userData$RDSCheckData)
+                                # ModDataSetMonitor_Server(id = "CDSCheck", DataSetCheckData = session$userData$CDSCheckData)
+                                # ModDataSetMonitor_Server(id = "ADSCheck", DataSetCheckData = session$userData$ADSCheckData)
                               }
 
         # Call Widget frame module and pass widget-specific server logic
-        ModWidget_Server(id = "ServerExplorerWidget",
-                         WidgetServerLogic,
-                         EnableLiveConnection)
+        Mod.Widget.Server(id = "ServerExplorerWidget",
+                         WidgetServerLogic)
 
         #-----------------------------------------------------------------------
 
         # Initialize global objects
         session$userData$RDSCheckData <- reactiveVal(NULL)
-        session$userData$CDSCheckData <- reactiveVal(NULL)
-        session$userData$ADSCheckData <- reactiveVal(NULL)
-        session$userData$CurationReport <- reactiveVal(NULL)
-        session$userData$DSConnections <- reactiveVal(NULL)
-        session$userData$ServerSpecifications <- reactiveVal(NULL)
+        #session$userData$CDSCheckData <- reactiveVal(NULL)
+        #session$userData$ADSCheckData <- reactiveVal(NULL)
 
         # output$TestMonitor <- renderText({  req(session$userData$ServerWorkspaceInfo())
         #                                     paste0(names(session$userData$ServerWorkspaceInfo()), collapse = ", ") })
 
 
         # 'ModInitialize' assigns content to session$userData objects at app start
-        ModInitialize(id = "Initialize",
-                      RDSCheckData = RDSCheckData,
-                      CDSCheckData = CDSCheckData,
-                      ADSCheckData = ADSCheckData,
-                      CurationReport = CurationReport,
-                      DSConnections = DSConnections,
-                      ServerSpecifications = ServerSpecifications)
+        Mod.Initialize(id = "Initialize",
+                       RDSCheckData = RDSCheckData,
+                       #CDSCheckData = CDSCheckData,
+                       #ADSCheckData = ADSCheckData,
+                       )
 
         # If the option 'EndProcessWhenClosingApp' is TRUE, the following ensures that the background process is automatically ending when the app shuts down
         if (EndProcessWhenClosingApp == TRUE) { session$onSessionEnded(function() { stopApp() }) }

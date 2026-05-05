@@ -8,7 +8,7 @@
 
 #' @noRd
 #-------------------------------------------------------------------------------
-ModUnivariateExploration_UI <- function(id)
+Mod.UnivariateExploration.UI <- function(id)
 #-------------------------------------------------------------------------------
 {
   ns <- NS(id)
@@ -121,8 +121,8 @@ ModUnivariateExploration_UI <- function(id)
 
 #' @noRd
 #-------------------------------------------------------------------------------
-ModUnivariateExploration_Server <- function(id,
-                                            ObjectSelection)
+Mod.UnivariateExploration.Server <- function(id,
+                                             ObjectSelection)
 #-------------------------------------------------------------------------------
 {
   moduleServer(id,

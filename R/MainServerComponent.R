@@ -1,7 +1,7 @@
 
 #' MainServerComponent
 #'
-#' Main server component of CCPhosApp
+#' Main server component of FredaApp
 #'
 #' @return Returns the main server function for the Shiny app
 #'
@@ -9,7 +9,7 @@
 #'
 #' @author Bastian Reiter
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-MainServerComponent <- function(CCPTestData = NULL,
+MainServerComponent <- function(TestData = NULL,
                                 RDSCheckData = NULL,
                                 CDSCheckData = NULL,
                                 ADSCheckData = NULL,
@@ -43,20 +43,20 @@ MainServerComponent <- function(CCPTestData = NULL,
     session$userData$ServerSpecifications <- reactiveVal(NULL)
     session$userData$ServerWorkspaceInfo <- reactiveVal(NULL)
 
-    session$userData$CCPTestData <- NULL
+    session$userData$TestData <- NULL
 
 
     # --- Call module: Initialize ---
     # Assigns content to session$userData objects at app start
-    ModInitialize(id = "Initialize",
-                  ADSCheckData = ADSCheckData,
-                  CCPTestData = CCPTestData,
-                  CDSCheckData = CDSCheckData,
-                  CurationReport = CurationReport,
-                  DSConnections = DSConnections,
-                  RDSCheckData = RDSCheckData,
-                  ServerSpecifications = ServerSpecifications,
-                  ServerWorkspaceInfo = ServerWorkspaceInfo)
+    Mod.Initialize(id = "Initialize",
+                   ADSCheckData = ADSCheckData,
+                   TestData = TestData,
+                   CDSCheckData = CDSCheckData,
+                   CurationReport = CurationReport,
+                   DSConnections = DSConnections,
+                   RDSCheckData = RDSCheckData,
+                   ServerSpecifications = ServerSpecifications,
+                   ServerWorkspaceInfo = ServerWorkspaceInfo)
 
 
     # Initialize menu behavior
@@ -103,7 +103,7 @@ MainServerComponent <- function(CCPTestData = NULL,
 
 
     # --- Call module: Connection Status ---
-    ModConnectionStatus_Server(id = "ConnectionStatus")
+    Mod.ConnectionStatus.Server(id = "ConnectionStatus")
 
 
     output$ProjectNameOutput <- renderUI({ "" })
@@ -124,7 +124,7 @@ MainServerComponent <- function(CCPTestData = NULL,
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     # --- Call module: Login ---
-    ModLogin_Server(id = "Login")
+    Mod.Login.Server(id = "Login")
 
 
 
@@ -135,10 +135,10 @@ MainServerComponent <- function(CCPTestData = NULL,
     # --- Set up processing steps feedback ---
 
     StatusConnected <- reactiveVal(FALSE)
-    StatusServerRequirementsChecked <- ModProcessingTerminal_Server(id = "CheckServerRequirements")
-    StatusDataLoaded <- ModProcessingTerminal_Server(id = "LoadData")
-    StatusDataCurated <- ModProcessingTerminal_Server(id = "CurateData")
-    StatusDataAugmented <- ModProcessingTerminal_Server(id = "AugmentData")
+    StatusServerRequirementsChecked <- Mod.ProcessingTerminal.Server(id = "CheckServerRequirements")
+    StatusDataLoaded <- Mod.ProcessingTerminal.Server(id = "LoadData")
+    StatusDataCurated <- Mod.ProcessingTerminal.Server(id = "CurateData")
+    StatusDataAugmented <- Mod.ProcessingTerminal.Server(id = "AugmentData")
 
     SelectedProcessingStep <- reactiveVal("None")
 
@@ -147,24 +147,24 @@ MainServerComponent <- function(CCPTestData = NULL,
 
 
     # --- Call module: Server Checkpoints ---
-    ModCheckpoints_Server("Checkpoints")
+    Mod.Checkpoints.Server("Checkpoints")
 
     # --- Call module: Server Opal DB Monitor ---
-    ModServerOpalDBMonitor_Server("ServerOpalDBMonitor")
+    Mod.ServerOpalDBMonitor.Server("ServerOpalDBMonitor")
 
     # --- Call module: Server Explorer ---
-    ModServerExplorer_Server("Prepare-ServerExplorer")
+    Mod.ServerExplorer.Server("Prepare-ServerExplorer")
 
     # --- Call modules: DataSet Monitors ---
-    ModDataSetMonitor_Server("RDSMonitor", DataSetCheckData = session$userData$RDSCheckData)
-    ModDataSetMonitor_Server("CDSMonitor", DataSetCheckData = session$userData$CDSCheckData)
-    ModDataSetMonitor_Server("ADSMonitor", DataSetCheckData = session$userData$ADSCheckData)
+    Mod.DataSetCheck.Server("RDSCheck", DataSetCheckData = session$userData$RDSCheckData)
+    Mod.DataSetCheck.Server("CDSCheck", DataSetCheckData = session$userData$CDSCheckData)
+    Mod.DataSetCheck.Server("ADSCheck", DataSetCheckData = session$userData$ADSCheckData)
 
-    # --- Call module: Data Curation Monitor ---
-    ModCurationReport_Server("CurationReport")
+    # --- Call module: Report.Counter ---
+    Mod.Report.Counter.Server("Report.Counter")
 
-    # --- Call module: Data Transformation Monitor ---
-    ModDataTransformationMonitor_Server("DataTransformationMonitor")
+    # --- Call module: Report.DataHarmonization ---
+    Mod.Report.DataHarmonization.Server("Report.DataHarmonization")
 
 
     MakeStep <- function(IconClass = "",
@@ -400,13 +400,13 @@ MainServerComponent <- function(CCPTestData = NULL,
 
 
     # --- Call module: Server Workspace Monitor ---
-    Selection <- ModServerExplorer_Server("Explore-ServerExplorer")
+    Selection <- Mod.ServerExplorer.Server("Explore-ServerExplorer")
     # SelectedObject <- Selection$Object
     # SelectedElement <- Selection$Element
 
     # --- Call module: Univariate Exploration ---
-    ModUnivariateExploration_Server("UnivariateExploration",
-                                    Selection)
+    Mod.UnivariateExploration.Server("UnivariateExploration",
+                                     Selection)
 
 
     # This stops the Shiny server in the current R process (specifically ends the background R process when hosting browser is closed)

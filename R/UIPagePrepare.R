@@ -42,19 +42,19 @@ UIPagePrepare <- function()
                                    padding: 0 1em 0 2em;",
 
                           shinyjs::hidden(div(id = "Terminal_CheckServerRequirements",
-                                              ModProcessingTerminal_UI("CheckServerRequirements",
+                                              Mod.ProcessingTerminal.UI("CheckServerRequirements",
                                                                        ButtonLabel = "Check server requirements"))),
 
                           shinyjs::hidden(div(id = "Terminal_LoadData",
-                                              ModProcessingTerminal_UI("LoadData",
+                                              Mod.ProcessingTerminal.UI("LoadData",
                                                                        ButtonLabel = "Load data"))),
 
                           shinyjs::hidden(div(id = "Terminal_CurateData",
-                                              ModProcessingTerminal_UI("CurateData",
+                                              Mod.ProcessingTerminal.UI("CurateData",
                                                                        ButtonLabel = "Start data curation"))),
 
                           shinyjs::hidden(div(id = "Terminal_AugmentData",
-                                              ModProcessingTerminal_UI("AugmentData",
+                                              Mod.ProcessingTerminal.UI("AugmentData",
                                                                        ButtonLabel = "Start data augmentation")))))))),
 
 
@@ -82,7 +82,7 @@ UIPagePrepare <- function()
                                    overflow: auto;
                                    margin: 0;",
 
-                          ModCheckpoints_UI("Checkpoints")),
+                          Mod.Checkpoints.UI("Checkpoints")),
 
                       div(style = "display: grid;
                                    align-items: center;
@@ -110,7 +110,7 @@ UIPagePrepare <- function()
                            overflow: auto;
                            margin: 0;",
 
-                  ModServerOpalDBMonitor_UI("ServerOpalDBMonitor")))),
+                  Mod.ServerOpalDBMonitor.UI("ServerOpalDBMonitor")))),
 
 
       #-----------------------------------------------------------------------
@@ -131,7 +131,7 @@ UIPagePrepare <- function()
                            # overflow: auto;
                            # margin: 0;",
 
-                  ModServerExplorer_UI("Prepare-ServerExplorer")))),
+                  Mod.ServerExplorer.UI("Prepare-ServerExplorer")))),
 
 
       #-----------------------------------------------------------------------
@@ -153,11 +153,11 @@ UIPagePrepare <- function()
                            margin: 0;",
 
                   shiny.semantic::tabset(tabs = list(list(menu = "Raw Data Set (RDS)",
-                                                          content = ModDataSetMonitor_UI("RDSMonitor")),
+                                                          content = Mod.DataSetCheck.UI("RDSCheck")),
                                                      list(menu = "Curated Data Set (CDS)",
-                                                          content = ModDataSetMonitor_UI("CDSMonitor")),
+                                                          content = Mod.DataSetCheck.UI("CDSCheck")),
                                                      list(menu = "Augmented Data Set (ADS)",
-                                                          content = ModDataSetMonitor_UI("ADSMonitor"))))))),
+                                                          content = Mod.DataSetCheck.UI("ADSCheck"))))))),
 
 
       #-----------------------------------------------------------------------
@@ -170,15 +170,15 @@ UIPagePrepare <- function()
 
           div(class = "active title AccordionHeader",
               shiny.semantic::icon(class = "dropdown"),
-              "Curation Report"),
+              "Counter Report"),
 
           div(class = "active content",
 
-              div(style = "height: 20em;
+              div(style = "height: 60em;
                            overflow: auto;
                            margin: 0;",
 
-                  ModCurationReport_UI("CurationReport")))),
+                  Mod.Report.Counter.UI("Report.Counter")))),
 
 
       #-----------------------------------------------------------------------
@@ -191,12 +191,12 @@ UIPagePrepare <- function()
 
           div(class = "active title AccordionHeader",
               shiny.semantic::icon(class = "dropdown"),
-              "Data Transformation Monitor"),
+              "Data Harmonization Report"),
 
           div(class = "active content",
 
               div(style = "height: 30em;
                            overflow: auto;",
 
-                  ModDataTransformationMonitor_UI("DataTransformationMonitor")))))
+                  Mod.Report.DataHarmonization.UI("Report.DataHarmonization")))))
 }

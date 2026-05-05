@@ -61,7 +61,7 @@ Widget.ServerExplorer <- function(#--- Arguments for app itself ---
   InitFunction <- function(...)
   {
       # Since the app is deployed as a package, the folder for external resources (e.g. CSS files, static images) needs to be added manually
-      shiny::addResourcePath('www', system.file("www", package = "CCPhosApp"))
+      shiny::addResourcePath('www', system.file("www", package = "FredaGUI"))
 
       #-------------------------------------------------------------------------
       # Widget UI component
@@ -75,17 +75,17 @@ Widget.ServerExplorer <- function(#--- Arguments for app itself ---
 
                   div(style = "height: 40em;",
 
-                      ModServerExplorer_UI(ns("ServerExplorer"))),
+                      Mod.ServerExplorer.UI(ns("ServerExplorer"))),
 
                   div(class = "ui divider"),
 
-                  div(ModUnivariateExploration_UI(ns("UnivariateExploration"))))
+                  div(Mod.UnivariateExploration.UI(ns("UnivariateExploration"))))
            }
 
            # Call Widget frame module UI and pass widget-specific UI layout
-           ModWidget_UI(id = "ServerExplorerWidget",
-                        Title = "CCPhos Server Explorer",
-                        WidgetMainUI = Layout)
+           Mod.Widget.UI(id = "ServerExplorerWidget",
+                         Title = "CCPhos Server Explorer",
+                         WidgetMainUI = Layout)
       }
 
       #-------------------------------------------------------------------------
@@ -103,16 +103,15 @@ Widget.ServerExplorer <- function(#--- Arguments for app itself ---
           WidgetServerLogic <- function(session)
                                {
                                   # The called module returns a list of reactive values...
-                                  Selection <- ModServerExplorer_Server(id = "ServerExplorer")
+                                  Selection <- Mod.ServerExplorer.Server(id = "ServerExplorer")
                                   # ... that is passed to another module
-                                  ModUnivariateExploration_Server(id = "UnivariateExploration",
-                                                                  Selection)
+                                  Mod.UnivariateExploration.Server(id = "UnivariateExploration",
+                                                                   Selection)
                                 }
 
           # Call Widget frame module and pass widget-specific server logic
-          ModWidget_Server(id = "ServerExplorerWidget",
-                           WidgetServerLogic,
-                           EnableLiveConnection)
+          Mod.Widget.Server(id = "ServerExplorerWidget",
+                            WidgetServerLogic)
 
           #---------------------------------------------------------------------
 
@@ -127,11 +126,11 @@ Widget.ServerExplorer <- function(#--- Arguments for app itself ---
 
 
           # 'ModInitialize' assigns content to session$userData objects at app start
-          ModInitialize(id = "Initialize",
-                        DSConnections = DSConnections,
-                        ExplorationData = ExplorationData,
-                        ServerSpecifications = ServerSpecifications,
-                        ServerWorkspaceInfo = ServerWorkspaceInfo)
+          Mod.Initialize(id = "Initialize",
+                         DSConnections = DSConnections,
+                         ExplorationData = ExplorationData,
+                         ServerSpecifications = ServerSpecifications,
+                         ServerWorkspaceInfo = ServerWorkspaceInfo)
 
 
           # If the option 'EndProcessWhenClosingApp' is TRUE, the following ensures that the background process is automatically ending when the app shuts down
