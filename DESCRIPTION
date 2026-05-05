@@ -40,5 +40,5 @@ Depends:
 LazyData: true
 Remotes: 
     github::BastianReiter/dsCCPhosClient,
-    github::BastianReiter/dsFredaClient
+    github::BastianReiter/dsFredaClient,
     github::kcuilla/reactablefmtr
