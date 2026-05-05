@@ -1,6 +1,6 @@
 
 #===============================================================================
-# AUXILIARY FUNCTIONS within CCPhosApp package
+# AUXILIARY FUNCTIONS within FredaApp package
 #===============================================================================
 
 
@@ -35,9 +35,7 @@ ColorToRGBCSS <- function(Color,
 
 #===============================================================================
 #' ConvertLogicalToIcon
-#'
 #' @param DataFrame \code{data.frame} or \code{tibble}
-#'
 #' @return \code{data.frame}
 #' @export
 #' @author Bastian Reiter
@@ -59,9 +57,7 @@ ConvertLogicalToIcon <- function(DataFrame)
 
 #===============================================================================
 #' CreateWaiterScreen
-#'
 #' @param ID \code{string}
-#'
 #' @return Waiter object
 #' @noRd
 #-------------------------------------------------------------------------------
@@ -73,6 +69,64 @@ CreateWaiterScreen <- function(ID)
 }
 #===============================================================================
 
+
+#===============================================================================
+#' DecimalToColor
+#' @param Decimal A decimal number
+#' @param Type One of 'Change' / 'Completeness' / 'Percentage'
+#' @return Hexadecimal color code as string
+#' @noRd
+#-------------------------------------------------------------------------------
+DecimalToColor <- function(Decimal,
+                           Type = "Change")
+{
+  if (is.na(Decimal)) { return(NA) }
+
+  Color <- "#000000"
+
+  if (Type == "Change")
+  {
+      if (Decimal == 0) { return("#FFFFFF") }
+      if (Decimal < 0) { ColorFunction <- grDevices::colorRampPalette(c("#EFD5DF", "#B03060")) }
+      if (Decimal > 0) { ColorFunction <- grDevices::colorRampPalette(c("#CDDAE9", "#054996")) }
+
+      Palette <- ColorFunction(101)      # Create a vector of 101 colors to assure valid indexing (s. below)
+      Color <- Palette[round(100 * abs(Decimal), digits = 0) + 1]      # '+1' is necessary to avoid invalid indexing (the term in the []-brackets can create 101 different integer numbers)
+  }
+
+  if (Type == "Completeness")
+  {
+        # Convert decimal numbers between 0 and 1 into hexadecimal color codes ranging on a defined color palette
+        ColorFunction <- grDevices::colorRampPalette(c("#B03060", "#FFD700", "#016936"))      # Use base-function grDevices::colorRampPalette to create function that allows mapping to hexadecimal codes on a palette of defined color points
+        Palette <- ColorFunction(101)      # Create a vector of 101 colors to assure valid indexing (s. below)
+        Color <- Palette[round(100 * abs(Decimal), digits = 0) + 1]      # '+1' is necessary to avoid invalid indexing (the term in the []-brackets can create 101 different integer numbers)
+  }
+
+  return(Color)
+}
+#===============================================================================
+
+
+#===============================================================================
+#' Reactable.ConditionalCellStyle
+#' @param Value The cell value
+#' @param Type One of 'Change' / 'Completeness'
+#' @return list of CSS properties
+#' @noRd
+#-------------------------------------------------------------------------------
+Reactable.ConditionalCellStyle <- function(Value,
+                                           Type = "Change")
+{
+  if (is.na(Value)) { return(NULL) }
+
+  Color <- DecimalToColor(Decimal = Value, Type = Type)
+
+  return(list(#background = ColorToRGBCSS(Color = Color, Alpha = 0.4),
+              background = Color,
+              color = "#000000"))
+}
+
+#===============================================================================
 
 
 #===============================================================================
@@ -93,7 +147,7 @@ SafeDS <- function(Expression)
 
 
 #===============================================================================
-#' DSError
+#' ShowDSError
 #' @noRd
 #-------------------------------------------------------------------------------
 ShowDSError <- function()

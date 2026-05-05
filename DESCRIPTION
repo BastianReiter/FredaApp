@@ -1,11 +1,11 @@
-Package: FredaApp
-Title: A Shiny App for FREDA
-Version: 0.3
+Package: FredaGUI
+Title: A Graphical User Interface for FREDA
+Version: 0.3.01
 Authors@R: 
     person("Bastian", "Reiter", , "b.reiter@med.uni-frankfurt.de", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-1088-0502"))
 Description: Shiny app to facilitate working with dsFredaClient
-URL: https://ccphos.netlify.app/, https://github.com/BastianReiter/FredaApp
+URL: https://ccphos.netlify.app/, https://github.com/BastianReiter/FredaGUI
 License: CC BY 4.0
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -25,6 +25,8 @@ Imports:
     pingr,
     plotly,
     purrr,
+    reactable,
+    reactablefmtr,
     shiny,
     shiny.router,
     shiny.semantic (>= 0.5.0),
@@ -39,3 +41,4 @@ LazyData: true
 Remotes: 
     github::BastianReiter/dsCCPhosClient,
     github::BastianReiter/dsFredaClient
+    github::kcuilla/reactablefmtr

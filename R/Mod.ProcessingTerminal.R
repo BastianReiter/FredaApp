@@ -8,8 +8,8 @@
 
 #' @noRd
 #-------------------------------------------------------------------------------
-ModProcessingTerminal_UI <- function(id,
-                                     ButtonLabel)
+Mod.ProcessingTerminal.UI <- function(id,
+                                      ButtonLabel)
 #-------------------------------------------------------------------------------
 {
   ns <- NS(id)
@@ -35,7 +35,7 @@ ModProcessingTerminal_UI <- function(id,
                            top: 0.5em;
                            left: 0;"),
 
-              ModMessageMonitor_UI(ns("Monitor"))))
+              Mod.MessageMonitor.UI(ns("Monitor"))))
 }
 
 
@@ -46,7 +46,7 @@ ModProcessingTerminal_UI <- function(id,
 
 #' @noRd
 #-------------------------------------------------------------------------------
-ModProcessingTerminal_Server <- function(id)
+Mod.ProcessingTerminal.Server <- function(id)
 #-------------------------------------------------------------------------------
 {
   moduleServer(id,
@@ -55,8 +55,8 @@ ModProcessingTerminal_Server <- function(id)
                   ReturnMessages <- reactiveVal(NULL)
                   Complete <- reactiveVal(FALSE)
 
-                  ModMessageMonitor_Server("Monitor",
-                                           MessagesList = ReturnMessages)
+                  Mod.MessageMonitor.Server("Monitor",
+                                            MessagesList = ReturnMessages)
 
                   observe({ shinyjs::showElement(id = "Monitor", anim = TRUE, animType = "fade") }) %>%
                       bindEvent(ReturnMessages())
@@ -124,9 +124,9 @@ ModProcessingTerminal_Server <- function(id)
                                 on.exit(LoadingOff())
 
                                 # Trigger function LoadRawDataSet()
-                                Messages <- SafeDS(dsCCPhosClient::LoadRawDataSet(ServerSpecifications = session$userData$ServerSpecifications(),
-                                                                                  RunAssignmentChecks = TRUE,
-                                                                                  DSConnections = session$userData$DSConnections()))
+                                Messages <- SafeDS(dsCCPhosClient::CCP.LoadRawDataSet(ServerSpecifications = session$userData$ServerSpecifications(),
+                                                                                      RunAssignmentChecks = TRUE,
+                                                                                      DSConnections = session$userData$DSConnections()))
 
                                 # In case of error (determined by class of 'SafeDS()' output), break reactive chain and show error notification
                                 if (inherits(Messages, "dsFail")) { ShowDSError(); return(NULL) }
@@ -167,12 +167,12 @@ ModProcessingTerminal_Server <- function(id)
                                 on.exit(LoadingOff())
 
                                 # Trigger function ds.CurateData() and save return
-                                Curation <- SafeDS(dsCCPhosClient::ds.CurateData(RawDataSetName = "CCP.RawDataSet",
-                                                                                 Settings = NULL,
-                                                                                 OutputName = "CCP.CurationOutput",
-                                                                                 UnpackCuratedDataSet = TRUE,
-                                                                                 RunAssignmentChecks = FALSE,
-                                                                                 DSConnections = session$userData$DSConnections()))
+                                Curation <- SafeDS(dsFredaClient::ds.CurateData(RawDataSetName = "CCP.RawDataSet",
+                                                                                Module = "CCP",
+                                                                                OutputName = "CCP.CurationOutput",
+                                                                                UnpackCuratedDataSet = TRUE,
+                                                                                RunAssignmentChecks = FALSE,
+                                                                                DSConnections = session$userData$DSConnections()))
 
                                 if (inherits(Curation, "dsFail")) { ShowDSError(); return(NULL) }
 
@@ -192,7 +192,7 @@ ModProcessingTerminal_Server <- function(id)
 
                                 # Update 'Checkpoints' data frame ...
                                 Checkpoints <- session$userData$Checkpoints() %>%
-                                                    left_join(Curation$CurationCompletionCheck, by = join_by(ServerName))
+                                                    left_join(Curation$Curation.Completion, by = join_by(ServerName))
 
                                 # # ... and reassign it to session$userData object
                                 session$userData$Checkpoints(Checkpoints)
@@ -227,11 +227,11 @@ ModProcessingTerminal_Server <- function(id)
                                 on.exit(LoadingOff())
 
                                 # Trigger function ds.AugmentData() and save return
-                                Augmentation <- SafeDS(dsCCPhosClient::ds.AugmentData(CuratedDataSetName = "CCP.CuratedDataSet",
-                                                                                      OutputName = "CCP.AugmentationOutput",
-                                                                                      UnpackAugmentedDataSet = TRUE,
-                                                                                      RunAssignmentChecks = FALSE,
-                                                                                      DSConnections = session$userData$DSConnections()))
+                                Augmentation <- SafeDS(dsCCPhosClient::ds.CCP.AugmentData(CuratedDataSetName = "CCP.CuratedDataSet",
+                                                                                          OutputName = "CCP.AugmentationOutput",
+                                                                                          UnpackAugmentedDataSet = TRUE,
+                                                                                          RunAssignmentChecks = FALSE,
+                                                                                          DSConnections = session$userData$DSConnections()))
 
                                 if (inherits(Augmentation, "dsFail")) { ShowDSError(); return(NULL) }
 

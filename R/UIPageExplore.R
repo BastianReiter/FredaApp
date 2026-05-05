@@ -12,7 +12,7 @@ UIPageExplore <- function()
 
       div(style = "height: 26em;",
 
-          ModServerExplorer_UI("Explore-ServerExplorer")),
+          Mod.ServerExplorer.UI("Explore-ServerExplorer")),
 
 
       #-----------------------------------------------------------------------
@@ -22,5 +22,5 @@ UIPageExplore <- function()
 
       div(style = "height: 60em;",
 
-          ModUnivariateExploration_UI("UnivariateExploration")))
+          Mod.UnivariateExploration.UI("UnivariateExploration")))
 }

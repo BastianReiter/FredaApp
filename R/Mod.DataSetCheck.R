@@ -1,6 +1,6 @@
 
 
-# --- MODULE: DataSetMonitor ---
+# --- MODULE: DataSetCheck ---
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Module UI component
@@ -8,12 +8,12 @@
 
 #' @noRd
 #-------------------------------------------------------------------------------
-ModDataSetMonitor_UI <- function(id)
+Mod.DataSetCheck.UI <- function(id)
 #-------------------------------------------------------------------------------
 {
   ns <- NS(id)
 
-  div(id = ns("DataSetMonitorContainer"),
+  div(id = ns("DataSetCheckContainer"),
       style = "",
 
       uiOutput(outputId = ns("TableStatus")),
@@ -42,8 +42,8 @@ ModDataSetMonitor_UI <- function(id)
 
 #' @noRd
 #-------------------------------------------------------------------------------
-ModDataSetMonitor_Server <- function(id,
-                                     DataSetCheckData)   # reactive
+Mod.DataSetCheck.Server <- function(id,
+                                    DataSetCheckData)   # reactive
 #-------------------------------------------------------------------------------
 {
   moduleServer(id,
@@ -100,12 +100,12 @@ ModDataSetMonitor_Server <- function(id,
                   observe({   req(DataSetCheckData())
 
                               # Process data from 'DataSetCheckData()' to get a list of data.frames (one per data set table) that contain detailed table info
-                              TableList <- DataSetCheckData()[c("TableRowCounts",
+                              TableList <- DataSetCheckData()[c("TableRecordCounts",
                                                                 "FeatureExistence",
                                                                 "FeatureTypes",
                                                                 "NonMissingValueRates")] %>%
                                               list_transpose(simplify = FALSE) %>%
-                                              map(\(TableData) CreateTableMonitor(TableData))      # Call custom function 'CreateTableMonitor()'
+                                              map(\(TableData) CreateTable.TableCheck(TableData))      # Call custom function 'CreateTable.TableCheck()'
 
                               # Turn prepared data.frames into HTML table code
                               HTMLTables <- TableList %>%

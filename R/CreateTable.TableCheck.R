@@ -1,7 +1,7 @@
 
-#' CreateTableMonitor
+#' CreateTable.TableCheck
 #'
-#' Compile table check data from \code{dsCCPhosClient::ds.CheckTable()} or \code{dsCCPhosClient::ds.CheckDataSet()} into a table suited for display
+#' Compile table check data from \code{dsFredaClient::ds.CheckTable()} or \code{dsFredaClient::ds.CheckDataSet()} into a table suited for display
 #'
 #' @param TableData \code{list} - Contains...
 #'
@@ -13,11 +13,16 @@
 #'
 #' @author Bastian Reiter
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-CreateTableMonitor <- function(TableData)
+CreateTable.TableCheck <- function(TableData)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {
   # --- For Testing Purposes ---
-  # TableData <- NULL
+  # TableData <- RDSTableCheck[c("TableRecordCounts",
+  #                              "FeatureExistence",
+  #                              "FeatureTypes",
+  #                              "NonMissingValueRates")] %>%
+  #                 list_transpose(simplify = FALSE) %>%
+  #                 pluck("Staging")
 
 #-------------------------------------------------------------------------------
 
@@ -77,26 +82,26 @@ CreateTableMonitor <- function(TableData)
   # Get table feature names
   FeatureNames <- names(TableData$FeatureExistence)[-1]
 
-  # Get table row counts
-  RowCounts <- TableData$TableRowCounts
+  # Get table record counts
+  RecordCounts <- TableData$TableRecordCounts
 
   # Before joining tables, create vector defining correct column order
   ColumnOrder <- c("ServerName",
-                   names(RowCounts)[-1],
+                   names(RecordCounts)[-1],
                    rbind(FeatureNames,
                          names(FeatureTypes)[-1],
                          names(NonMissingValueRates)[-1],
                          names(NonMissingValueRates_CSS)[-1]))
 
   TableDetails <- TableData$FeatureExistence %>%
-                      left_join(RowCounts, by = join_by(ServerName)) %>%
+                      left_join(RecordCounts, by = join_by(ServerName)) %>%
                       left_join(FeatureTypes, by = join_by(ServerName)) %>%
                       left_join(NonMissingValueRates, by = join_by(ServerName)) %>%
                       left_join(NonMissingValueRates_CSS, by = join_by(ServerName)) %>%
                       select(all_of(ColumnOrder))
 
   HeaderColspans <- c(1, 1, rep.int(3, length(FeatureNames))) %>%
-                        set_names(c("ServerName", "RowCount", FeatureNames))
+                        set_names(c("ServerName", "RecordCount", FeatureNames))
 
   return(list(TableDetails = TableDetails,
               HeaderColspans = HeaderColspans))

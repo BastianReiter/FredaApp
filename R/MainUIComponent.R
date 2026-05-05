@@ -1,7 +1,7 @@
 
 #' MainUIComponent
 #'
-#' Main UI component of CCPhosApp
+#' Main UI component of FredaApp
 #'
 #' @noRd
 #' @author Bastian Reiter
@@ -20,18 +20,18 @@ shiny.semantic::semanticPage(
     margin = "0",
 
     # Add custom CSS file
-    tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "www/CCPhosStyle.css")),
+    tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "www/FredaStyle.css")),
 
     # Add extra JS to enable functionality of semantic accordion
     tags$script(language="javascript",
                 "$(document).ready(function() { window.onload = function(){ $('.ui.accordion').accordion(); }; });"),
 
     # Title shown in browser
-    title = "CCPhos App",
+    title = "FREDA App",
 
     # Initiate use of shinyjs functionality
     shinyjs::useShinyjs(),
-    # shinyjs::extendShinyjs(script = "CCPhosJS.js",
+    # shinyjs::extendShinyjs(script = "FredaJS.js",
     #                        functions = c("HoverTableRow",
     #                                      "SelectTableRow")),
 
@@ -84,13 +84,13 @@ shiny.semantic::semanticPage(
                                                        justify-content: space-between;
                                                        align-items: center;",
 
-                                              img(src = "www/Logo_CCPhosApp.png",
-                                                  alt = "CCPhos App Logo",
+                                              img(src = "www/FredaLogo.png",
+                                                  alt = "Freda App Logo",
                                                   height = "80px"),
 
                                               uiOutput(outputId = "ProjectNameOutput"),
 
-                                              ModConnectionStatus_UI("ConnectionStatus")),
+                                              Mod.ConnectionStatus.UI("ConnectionStatus")),
 
 
         #--- LEFT SIDE COLUMN --------------------------------------------------

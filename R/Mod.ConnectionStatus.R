@@ -8,7 +8,7 @@
 
 #' @noRd
 #-------------------------------------------------------------------------------
-ModConnectionStatus_UI <- function(id)
+Mod.ConnectionStatus.UI <- function(id)
 #-------------------------------------------------------------------------------
 {
   ns <- NS(id)
@@ -47,7 +47,7 @@ ModConnectionStatus_UI <- function(id)
 
 #' @noRd
 #-------------------------------------------------------------------------------
-ModConnectionStatus_Server <- function(id)
+Mod.ConnectionStatus.Server <- function(id)
 #-------------------------------------------------------------------------------
 {
   moduleServer(id,

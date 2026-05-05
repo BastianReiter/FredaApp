@@ -69,30 +69,25 @@ DataFrameToHtmlTable <- function(DataFrame,
 
 #-------------------------------------------------------------------------------
 
-
   # If DataFrame is empty return empty string
   if (is.null(DataFrame))
   {
       return("")
   }
 
-
   # Convert object passed to 'DataFrame' argument (e.g. tibble) to data.frame
   DataFrame <- as.data.frame(DataFrame)
-
 
   # If no explicit TableID is passed, assign it a random sample of letters
   TableID <- ifelse(is.null(TableID),
                     paste0(sample(LETTERS, 9, TRUE), collapse = ""),
                     TableID)
 
-
   # If there are special purpose columns, don't render their content in the table
   HiddenColumns <- c(CategoryColumn,
                      RowColorColumn,
                      names(DataFrame)[str_starts(names(DataFrame), "CellCSSClass")],      # All column names that start with "CellCSSClass"
                      names(DataFrame)[str_starts(names(DataFrame), "CellCSSCode")])      # All column names that start with "CellCSSCode"
-
 
   # If there is a column informing about categories, get all unique category values
   CategoryValues <- "None"
@@ -105,9 +100,9 @@ DataFrameToHtmlTable <- function(DataFrame,
   AvailableColors <- c("red", "orange", "yellow", "olive", "green", "teal", "blue", "violet", "purple", "pink", "brown", "grey", "black")
 
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # Table Header: Get collection of th-elements as character-vector
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#===============================================================================
+# Table Header: Get collection of th-elements as character-vector
+#===============================================================================
 
   RelevantColumnHeaders <- colnames(DataFrame)
   if (!is.null(HeaderColspans)) { RelevantColumnHeaders <- names(HeaderColspans) }
@@ -191,9 +186,9 @@ DataFrameToHtmlTable <- function(DataFrame,
                             "))")
 
 
-#-------------------------------------------------------------------------------
+#===============================================================================
 # Table body rows: Get collection of tr- and td-elements as character vectors
-#-------------------------------------------------------------------------------
+#===============================================================================
 
   StringsTableRows <- character()
   Data <- DataFrame

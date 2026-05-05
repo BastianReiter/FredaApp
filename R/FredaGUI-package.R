@@ -5,12 +5,14 @@
 #' @import assertthat
 #' @import dplyr
 #' @import purrr
+#' @import reactable
 #' @import shiny
 #' @import stringr
 #' @import tidyr
 #' @importFrom dsFredaClient AddCumulativeRow
 #' @importFrom dsFredaClient CheckDSConnections
 #' @importFrom dsFredaClient DisplayTimeSeries
+#' @importFrom dsFredaClient ds.CurateData
 #' @importFrom dsFredaClient ds.ExtractFromList
 #' @importFrom dsFredaClient ds.FilterTable
 #' @importFrom dsFredaClient ds.GetCrossTab
